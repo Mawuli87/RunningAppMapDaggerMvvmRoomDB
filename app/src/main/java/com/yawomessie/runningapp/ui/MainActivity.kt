@@ -1,5 +1,6 @@
 package com.yawomessie.runningapp.ui
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -7,10 +8,12 @@ import android.view.View
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.yawomessie.runningapp.R
 import com.yawomessie.runningapp.databinding.ActivityMainBinding
 import com.yawomessie.runningapp.db.RunDAO
+import com.yawomessie.runningapp.utils.Constants.ACTION_SHOW_TRACKING_FRAGMENT
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -32,7 +35,7 @@ lateinit var binding:ActivityMainBinding
         navController = navHostFragment.navController
         binding.bottomNavigationView.setupWithNavController(navController)
 
-
+        navigateToTrackingFragmentIfNeeded(intent)
 
             navController.addOnDestinationChangedListener { _, destination, _ ->
                 when(destination.id) {
@@ -42,5 +45,18 @@ lateinit var binding:ActivityMainBinding
                 }
             }
 
+    }
+
+    //when we minimize the app. this will be called not onCreate but when
+    //the app is destroyed then the onCreate will be called to recreate
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        navigateToTrackingFragmentIfNeeded(intent)
+    }
+
+    private fun navigateToTrackingFragmentIfNeeded(intent: Intent?) {
+        if(intent?.action == ACTION_SHOW_TRACKING_FRAGMENT) {
+            navHostFragment.findNavController().navigate(R.id.action_global_trackingFragment)
+        }
     }
 }
